@@ -38,3 +38,37 @@
 # 
 # The life cycle will repeat for a specified number of time steps. 
 
+
+
+
+
+#####Packages#####
+library(ggplot2)
+
+
+
+
+#####Parameters#####
+
+
+
+
+
+#####Functions#####
+
+
+
+
+
+#####Model Start#####
+
+
+
+
+
+#####Analysis#####
+
+
+
+
+
