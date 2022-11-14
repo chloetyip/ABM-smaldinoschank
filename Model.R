@@ -50,12 +50,92 @@ library(ggplot2)
 
 #####Parameters#####
 
+#Population Size#
+#The number of agents to be generated
+popsize<-100
 
+#Maximum Number of Dates#
+#Maximum number of dates agents will go on
+maxdates<-50
 
+#Neighborhood Radius#
+#The size of each agent's neighborhood
+radius<-10
 
 
 #####Functions#####
 
+#Agent Generation#
+agentgenerate<-function(n,sex){
+  
+  #Assign agents random physical attractiveness
+  physatt<-runif(n,0,10)
+  
+  #Assign agents a decision rule
+  rule<-sample(c("rule 1","rule 2"),n,replace=T,prob=1/2)
+  
+  #Assign agents a move strategy
+  movestrat<-sample(c("brownian","zigzag","nonspatial"),n,replace=T,prob=1/3)
+  
+  #Create a vector to store the agents' date memories
+  numdates<-0
+  
+  #Generate an ID number for each agent
+  ID<-1:n
+  
+  #Assign each agent a random x-position
+  xpos<-runif(n,0,100)
+  
+  #Assign each agent a random y-position
+  ypos<-runif(n,0,100)
+  
+  #Put the agents together
+  agents<-data.frame(ID,sex,physatt,numdates,xpos,ypos,rule,movestrat)
+  
+  #Output the agents
+  return(agents)
+  
+}
+
+
+
+#Assessment Function#
+assess<-function(agents,popsize,radius){
+  
+  #Determine the distance between each agent and every other agent
+  distances<-as.matrix(dist(agents[,2:3]))
+  
+  #Generate a blank vector to store date decision
+  datedecision<-rep(NA,popsize)
+  
+  for (a in 1:popsize){
+    
+    #Determine which agents are in agent a's neighborhood
+    neighbors<-distances[a,]<=radius
+    
+    #Determine which agents are of the opposite sex as agent a
+    oppositesex<-agents$sex[a]!=agents$sex
+    
+    #Have the agent decide whether they want to date
+    datedecision[a]<-oppositesex==T
+    
+  }
+  
+  #Output the agents' decisions
+  return(datedecision)
+  
+}
+
+
+
+#Move#
+#A function to have agents move
+move<-function(agents,){
+  
+  #If the agent has a Brownian move strategy...
+  if(unique(agents$move=="brownian"))
+  
+}
 
 
 
