@@ -11,7 +11,7 @@
 # Half of all agents will be male and half will be female.
 # Agent physical attractiveness values will be drawn from random uniform distributions constrained between 0 and 10.
 #Decision Rule 1: choose the most attractive partner. Decision Rule 2: choose the most similar partner. Half of the agents will be assigned Rule 1 and half will be assigned rule 2.
-# Agent move strategy will be drawn equally from three different strategies, Brownian walk, Zigzag walk, and the nonspatial condition. The Brownian walk consists of the agent choosing randomly between its eight nearest neighboring sites. Each site has an equal probability of being selected. The Zigzag walk consists of the agent choosing between moving forward-left or forward-right depending on its current orientation. Each site has an equal probability of being chosen. The nonspatial condition entails no particular walk strategy. Encounters are completely random and are uncorrelated in space and time. 
+# Agent move strategy will be drawn equally from two different strategies, Brownian walk or Zigzag walk. The Brownian walk consists of the agent choosing randomly between its eight nearest neighboring sites. Each site has an equal probability of being selected. The Zigzag walk consists of the agent choosing between moving forward-left or forward-right depending on its current orientation. Each site has an equal probability of being chosen. 
 # Agents will also possess a maximum number of dates they will tolerate going on before settling for any mate.
 # Agent selectivity will gradually decline as they approach their maximum number of dates.
 # 
@@ -74,9 +74,6 @@ agentgenerate<-function(n,sex){
   #Assign agents a decision rule
   rule<-sample(c("rule 1","rule 2"),n,replace=T,prob=1/2)
   
-  #Assign agents a move strategy
-  movestrat<-sample(c("brownian","zigzag","nonspatial"),n,replace=T,prob=1/3)
-  
   #Create a vector to store the agents' date memories
   numdates<-0
   
@@ -84,13 +81,13 @@ agentgenerate<-function(n,sex){
   ID<-1:n
   
   #Assign each agent a random x-position
-  xpos<-runif(n,0,100)
+  xpos<-sample(0:100,1)
   
   #Assign each agent a random y-position
-  ypos<-runif(n,0,100)
+  ypos<-sample(0:100,1)
   
   #Put the agents together
-  agents<-data.frame(ID,sex,physatt,numdates,xpos,ypos,rule,movestrat)
+  agents<-data.frame(ID,sex,physatt,numdates,xpos,ypos,rule)
   
   #Output the agents
   return(agents)
@@ -129,11 +126,23 @@ assess<-function(agents,popsize,radius){
 
 
 #Move#
-#A function to have agents move
-move<-function(agents,){
+#A function to have agents move using the Brownian strategy
+move<-function(agents){
   
-  #If the agent has a Brownian move strategy...
-  if(unique(agents$move=="brownian"))
+  #Create a matrix of movement options
+  posDiffs<-expand.grid(-1:1,-1:1)[-5,]
+  
+  #Loops through agents one-by-one...
+  for(a in 1:nrow(agents)){
+    
+    #Give them new X and Y coordinates to move to one of eight neighboring sites
+    agents$xpos[a]<-agents$xpos[a]+posDiffs[sample(1:8,1),]
+    agents$ypos[a]<-agents$ypos[a]+posDiffs[sample(1:8,1),]
+    
+  }
+  
+  #Output the agents with their new positions
+  return(agents)
   
 }
 
