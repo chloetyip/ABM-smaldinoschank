@@ -104,8 +104,6 @@ assess<-function(focal,target){
     dist(rbind(x[5:6],target[,5:6]))<radius
     
     )
- 
-  return(date)
    
 }
 
@@ -174,15 +172,15 @@ steps<-0
 
 while(steps<maxsteps){
   #Assess#
-  assess(males,females)
-  assess(females,males)
+  fdatedecision<-assess(females,males)
+  mdatedecision<-assess(males,females)
   
   
   #Date#
   
   #Select a random single male and single female in the same neighborhood to date
-  fdate<-bettersample(females$ID[!(females$ID %in% pairedfemales)]&females$date==TRUE,1)
-  mdate<-bettersample(males$ID[!(males$ID %in% pairedmales)]&males$date==TRUE,1)
+  fdate<-bettersample(females$ID[!(females$ID %in% pairedfemales)]&fdatedecision==TRUE,1)
+  mdate<-bettersample(males$ID[!(males$ID %in% pairedmales)]&mdatedecision==TRUE,1)
   
   #Increment the number of date agents have been on by 1
   females$numdates[fdate]<-females$numdates[fdate]+1
