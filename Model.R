@@ -197,31 +197,14 @@ while(steps<maxsteps){
   fchoosy<-ifelse(fchoosy>0,fchoosy,0)
   mchoosy<-ifelse(mchoosy>0,mchoosy,0)
   
-  #If the agent abides by Rule 1...
-  if(females$rule[fdate]=="rule 1"|males$rule[mdate]=="rule 1"){
-    
-    #Set the probability of a commitment offer based on date attractiveness and
-    #agent selectiveness
-    fp<-((males$physatt[mdate]^3)/1000)^fchoosy
-    mp<-((females$physatt[fdate]^3)/1000)^mchoosy
-    
-    #Have each agent probabilistically make an offer of commitment
-    foffer<-rbinom(1,1,fp)
-    moffer<-rbinom(1,1,mp)
-    
-  } else {
-    #Otherwise, if the agent abides by rule 2...
-    
-    #Set the probability of a commitment offer based on date similarity and
-    #agent selectiveness
-    fp<-(10-abs(males$physatt[mdate]-females$physatt[fdate])/10)^fchoosy
-    mp<-(10-abs(females$physatt[fdate]-males$physatt[mdate])/10)^mchoosy
-    
-    #Have each agent probabilistically make an offer of commitment
-    foffer<-rbinom(1,1,fp)
-    moffer<-rbinom(1,1,mp)
-    
-  }
+  #Set the probability of a commitment offer based on date attractiveness and
+  #agent selectiveness
+  fp<-((males$physatt[mdate]^3)/1000)^fchoosy
+  mp<-((females$physatt[fdate]^3)/1000)^mchoosy
+  
+  #Have each agent probabilistically make an offer of commitment
+  foffer<-rbinom(1,1,fp)
+  moffer<-rbinom(1,1,mp)
   
   
   #Pair#
