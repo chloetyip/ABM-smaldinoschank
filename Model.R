@@ -81,10 +81,10 @@ agentgenerate<-function(n,sex){
   ID<-1:n
   
   #Assign each agent a random x-position
-  xpos<-sample(0:100,1)
+  xpos<-sample(0:100,n,replace=T)
   
   #Assign each agent a random y-position
-  ypos<-sample(0:100,1)
+  ypos<-sample(0:100,n,replace=T)
   
   #Put the agents together
   agents<-data.frame(ID,sex,physatt,numdates,xpos,ypos,rule)
@@ -100,10 +100,15 @@ agentgenerate<-function(n,sex){
 assess<-function(focal,target){
   
   #Determine which agents are in an agent's neighborhood
-  date<-apply(focal,1,function(x)
-    dist(rbind(x[5:6],target[,5:6]))<radius
-    
-    )
+  date<-t(apply(focal,1,function(x)
+    apply(target,1,function(y)
+          dist(rbind(x[5:6],y[5:6]))<radius)
+    ))
+  
+  rownames(date)<-focal$ID
+  colnames(date)<-target$ID
+  
+  return(date)
    
 }
 
@@ -171,16 +176,28 @@ maxsteps<-100
 steps<-0
 
 while(steps<maxsteps){
-  #Assess#
-  fdatedecision<-assess(females,males)
-  mdatedecision<-assess(males,females)
   
+  #Assess#
+  #Have agents assess whether they are neighbors
+  assessment<-assess(females,males)
+
+  #Determine which agents actually are neighbors
+  neighbors<-which(assessment==T,arr.ind=T)
+  
+  #Eliminate paired females
+  neighbors<-neighbors[!(neighbors[,1] %in% pairedfemales),]
+  
+  #Eliminate paired males
+  neighbors<-neighbors[!(neighbors[,2] %in% pairedmales),]
+  
+  #Pick a random pair of neighbors to date
+  date<-sample(1:nrow(neighbors),1)
   
   #Date#
   
   #Select a random single male and single female in the same neighborhood to date
-  fdate<-bettersample(females$ID[!(females$ID %in% pairedfemales)]&fdatedecision==TRUE,1)
-  mdate<-bettersample(males$ID[!(males$ID %in% pairedmales)]&mdatedecision==TRUE,1)
+  fdate<-neighbors[date,1]
+  mdate<-neighbors[date,2]
   
   #Increment the number of date agents have been on by 1
   females$numdates[fdate]<-females$numdates[fdate]+1
