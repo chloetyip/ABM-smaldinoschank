@@ -119,14 +119,22 @@ assess<-function(focal,target){
 move<-function(agents){
   
   #Create a matrix of movement options
-  posDiffs<-expand.grid(-1:1,-1:1)[-5,]
+  posDiffs<-expand.grid(-1:1,-1:1)
+  
+  #Remove the central position
+  posDiffs<-posDiffs[-5,]
   
   #Loops through agents one-by-one...
   for(a in 1:nrow(agents)){
     
     #Give them new X and Y coordinates to move to one of eight neighboring sites
-    agents$xpos[a]<-agents$xpos[a]+posDiffs[sample(1:8,1),]
-    agents$ypos[a]<-agents$ypos[a]+posDiffs[sample(1:8,1),]
+    newPos<-sample(1:8,1)
+    newX<-agents$xpos[a]+posDiffs[newPos,1]
+    newY<-agents$ypos[a]+posDiffs[newPos,2]
+    
+    #Update the agents' positions
+    agents$xpos[a]<-newX
+    agents$ypos[a]<-newY
     
   }
   
@@ -164,8 +172,8 @@ pairedfemales<-c()
 pairedmales<-c()
 
 #Save the agents' starting positions
-femalestartdata<-females
-malestartdata<-males
+femalesstartdata<-females
+malesstartdata<-males
 
 ###Life Cycle###
 
@@ -178,6 +186,7 @@ steps<-0
 while(steps<maxsteps){
   
   #Assess#
+  
   #Have agents assess whether they are neighbors
   assessment<-assess(females,males)
 
@@ -234,9 +243,39 @@ while(steps<maxsteps){
     pairedmales<-c(pairedmales,mdate)
     
     #Generate two new agents
+    fnew<-agentgenerate(1,"female")
+    mnew<-agentgenerate(1,"male")
+    
+    #Assign random positions to the new agents
+    fnew$xpos<-sample(0:100,1)
+    fnew$ypos<-sample(0:100,1)
+    mnew$xpos<-sample(0:100,1)
+    mnew$ypos<-sample(0:100,1)
+    
+    #Update the ID number of the new agents
+    fnew$ID<-max(females$ID)+1
+    mnew$ID<-max(males$ID)+1
+    
+    #Add the new agents to the population
+    females<-rbind(females,fnew)
+    males<-rbind(males,mnew)
+    
+    #Save the new agents' starting positions
+    femalesstartdata<- rbind(femalesstartdata,fnew)
+    malesstartdata <- rbind(malesstartdata,mnew)
     
   }
+  
+  #Move#
+  
+  #Move agents
+  females<-move(females)
+  males<-move(males)
 
+  
+  #Increment steps by 1
+  steps<-steps+1
+  
 }
 
 #Save the agents' ending positions
